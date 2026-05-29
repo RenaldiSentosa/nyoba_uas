@@ -1,0 +1,16 @@
+[
+  {
+    "title": "Pengenalan Jaringan Komputer",
+    "category": "Jaringan",
+    "desc": "Materi dasar mengenai arsitektur jaringan, topologi, dan protokol dasar komunikasi data.",
+    "file": null,
+    "done": false
+  },
+  {
+    "title": "Dasar Pemrograman Web PWA",
+    "category": "Pemrograman",
+    "desc": "Belajar bagaimana mengubah website statis menjadi Progressive Web Apps yang responsive dan offline-capable.",
+    "file": null,
+    "done": false
+  }
+]
