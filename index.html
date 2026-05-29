@@ -3,133 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LMS Kelompok Keliatan</title>
+    <title>LMS Modern - Kelompok Keliatan</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --primary: #4a90e2;
-            --light: #f4f4f4;
+            --primary: #6366f1; /* Indigo Modern */
+            --primary-dark: #4f46e5;
+            --secondary: #64748b;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --glass: rgba(255, 255, 255, 0.8);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
-        body { font-family: sans-serif; margin: 0; background: var(--light); }
-        header { background: var(--primary); color: white; padding: 1rem; text-align: center; }
 
-        nav { display: none; justify-content: center; background: #fff; flex-wrap: wrap; }
-        nav a { padding: 1rem; cursor: pointer; text-decoration: none; color: #333; }
-        nav a:hover { color: var(--primary); }
+        * { box-sizing: border-box; transition: all 0.3s ease; }
 
-        .page { display: none; padding: 20px; max-width: 800px; margin: auto; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            background: var(--bg); 
+            color: var(--text-dark);
+            padding-top: 130px; /* Jarak agar konten tidak tertutup header */
+        }
+
+        /* HEADER & NAV MODERN */
+        header { 
+            background: var(--primary); 
+            background: linear-gradient(135deg, var(--primary), #818cf8);
+            color: white; 
+            padding: 15px 0; 
+            text-align: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        header h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+
+        nav { 
+            display: none; 
+            justify-content: center; 
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 55px; /* Tepat di bawah header h1 */
+            width: 100%;
+            z-index: 999;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 5px 0;
+        }
+
+        nav a { 
+            padding: 12px 18px; 
+            cursor: pointer; 
+            text-decoration: none; 
+            color: var(--text-light); 
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 8px;
+            margin: 0 4px;
+        }
+
+        nav a i { font-size: 16px; }
+
+        nav a:hover { 
+            background: rgba(99, 102, 241, 0.1); 
+            color: var(--primary); 
+        }
+
+        /* Menu Aktif */
+        nav a.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* CONTAINER & PAGES */
+        .page { display: none; padding: 20px; max-width: 900px; margin: auto; animation: fadeIn 0.5s ease; }
         .page.active { display: block; }
 
-        .card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { font-weight: 700; color: var(--text-dark); margin-bottom: 20px; font-size: 24px; }
+
+        /* CARDS MODERN */
+        .card { 
+            background: var(--white); 
+            padding: 25px; 
+            margin-bottom: 20px; 
+            border-radius: 16px; 
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+
+        /* INPUTS & BUTTONS */
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--primary); ring: 2px solid var(--primary); }
 
         button {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
+            padding: 12px 20px;
+            border-radius: 10px;
             cursor: pointer;
-            margin: 3px;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        input, textarea, select {
-            width: 95%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
+        button:hover { background: var(--primary-dark); transform: scale(1.02); }
+
+        /* FOOTER MINI */
         .author-badge {
-            font-size: 12px;
-            color: #666;
-            background: #eee;
-            padding: 3px 6px;
-            border-radius: 4px;
+            font-size: 11px;
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        /* QUIZ SPECIFIC */
+        #quizContainer .card button {
+            width: 100%;
+            justify-content: center;
+            margin: 5px 0;
+            background: #f1f5f9;
+            color: var(--text-dark);
+            border: 1px solid #e2e8f0;
+        }
+
+        #quizContainer .card button:hover { background: #e2e8f0; }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            nav { overflow-x: auto; justify-content: flex-start; padding: 5px 10px; }
+            nav a { white-space: nowrap; padding: 10px 12px; font-size: 12px; }
+            body { padding-top: 150px; }
         }
     </style>
 </head>
 
 <body>
 
-<header><h1>📚 LMS Kampus</h1></header>
+<header><h1><i class="fas fa-graduation-cap"></i> LMS KAMPUS PINTAR</h1></header>
+
+<nav id="navMenu">
+    <a id="nav-dashboard" onclick="go('dashboard')"><i class="fas fa-home"></i> Dashboard</a>
+    <a id="nav-courses" onclick="go('courses')"><i class="fas fa-plus-circle"></i> Tambah Materi</a>
+    <a id="nav-quizAdmin" onclick="go('quizAdmin')"><i class="fas fa-tasks"></i> Buat Quiz</a>
+    <a id="nav-learning" onclick="go('learning')"><i class="fas fa-book-open"></i> Materi</a>
+    <a id="nav-quiz" onclick="go('quiz')"><i class="fas fa-edit"></i> Kerjakan Quiz</a>
+    <a id="nav-certificate" onclick="go('certificate')"><i class="fas fa-award"></i> Sertifikat</a>
+    <a onclick="logout()" style="color: #ef4444;"><i class="fas fa-sign-out-alt"></i> Keluar</a>
+</nav>
 
 <section id="login" class="page active">
-    <h2>Login</h2>
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h2>Selamat Datang</h2>
+        <p style="color: var(--text-light);">Silakan masuk untuk mulai belajar</p>
+    </div>
     <div class="card">
-        <input type="text" id="username" placeholder="Nama">
+        <label>Nama Lengkap</label>
+        <input type="text" id="username" placeholder="Contoh: Wawan Kurniawan">
+        <label>Masuk Sebagai</label>
         <select id="role">
             <option value="student">Mahasiswa</option>
             <option value="admin">Dosen</option>
         </select>
-        <button onclick="login()">Masuk</button>
+        <button onclick="login()" style="width: 100%; justify-content: center;">Masuk Ke Sistem</button>
     </div>
 </section>
 
-<nav id="navMenu">
-    <a onclick="go('dashboard')">Dashboard</a>
-    <a id="menuCourse" onclick="go('courses')">Tambah Materi</a>
-    <a id="menuQuizAdmin" onclick="go('quizAdmin')">Buat Quiz</a>
-    <a onclick="go('learning')">Materi</a>
-    <a id="menuQuizUser" onclick="go('quiz')">Kerjakan Quiz</a>
-    <a id="menuCert" onclick="go('certificate')">Sertifikat</a>
-    <a onclick="logout()">Logout</a>
-</nav>
-
 <section id="dashboard" class="page">
-    <h2>Dashboard</h2>
+    <h2>Ringkasan Belajar</h2>
+    <div class="card" style="background: linear-gradient(to right, #6366f1, #a855f7); color: white;">
+        <h3 id="welcomeText" style="margin: 0;"></h3>
+        <p style="opacity: 0.9;">Semangat belajarnya hari ini!</p>
+    </div>
     <div class="card">
-        <p id="welcomeText"></p>
-        <p>Total Materi: <span id="totalCourse"></span></p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p style="color: var(--text-light); margin: 0;">Total Materi Tersedia</p>
+                <h1 id="totalCourse" style="margin: 5px 0; font-size: 36px;">0</h1>
+            </div>
+            <i class="fas fa-book-reader" style="font-size: 40px; color: var(--primary); opacity: 0.2;"></i>
+        </div>
     </div>
 </section>
 
 <section id="courses" class="page">
-    <h2>Tambah Materi</h2>
+    <h2>Buat Materi Baru</h2>
     <div class="card">
-        <input type="text" id="title" placeholder="Judul">
-        
+        <input type="text" id="title" placeholder="Judul Materi">
         <select id="category">
             <option value="">Pilih Kategori</option>
             <option value="Pemrograman">Pemrograman</option>
             <option value="Jaringan">Jaringan</option>
             <option value="Database">Database</option>
         </select>
-
-        <textarea id="desc" placeholder="Deskripsi"></textarea>
+        <textarea id="desc" placeholder="Deskripsi atau Konten Materi" rows="5"></textarea>
+        <label style="font-size: 12px; color: var(--text-light);">Lampiran (Gambar/PDF)</label>
         <input type="file" id="file">
-
-        <button onclick="addCourse()">Tambah</button>
-        <button onclick="updateCourse()" style="background:orange">Update</button>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="addCourse()"><i class="fas fa-save"></i> Simpan Materi</button>
+            <button onclick="updateCourse()" style="background:orange"><i class="fas fa-sync"></i> Perbarui</button>
+        </div>
     </div>
 </section>
 
 <section id="quizAdmin" class="page">
-    <h2>Buat Quiz</h2>
+    <h2>Panel Pembuatan Soal</h2>
     <div class="card">
         <input type="text" id="qText" placeholder="Pertanyaan">
-        <input type="text" id="opt1" placeholder="Jawaban A">
-        <input type="text" id="opt2" placeholder="Jawaban B">
-        <input type="text" id="opt3" placeholder="Jawaban C">
-        <input type="text" id="opt4" placeholder="Jawaban D">
-        <input type="number" id="correct" placeholder="Jawaban benar (0-3)">
-        <button onclick="addQuestion()">Tambah Soal</button>
+        <input type="text" id="opt1" placeholder="Pilihan A">
+        <input type="text" id="opt2" placeholder="Pilihan B">
+        <input type="text" id="opt3" placeholder="Pilihan C">
+        <input type="text" id="opt4" placeholder="Pilihan D">
+        <select id="correct">
+            <option value="">Pilih Jawaban Benar</option>
+            <option value="0">Jawaban A</option>
+            <option value="1">Jawaban B</option>
+            <option value="2">Jawaban C</option>
+            <option value="3">Jawaban D</option>
+        </select>
+        <button onclick="addQuestion()"><i class="fas fa-plus"></i> Tambah Soal</button>
     </div>
 </section>
 
 <section id="learning" class="page">
-    <h2>Materi</h2>
+    <h2>Materi Pembelajaran</h2>
     <div id="list"></div>
 </section>
 
 <section id="quiz" class="page">
-    <h2>Quiz</h2>
+    <h2>Ujian Kompetensi</h2>
     <div id="quizContainer"></div>
     <br>
-    <button onclick="finishQuiz()">Selesai Quiz</button>
+    <button onclick="finishQuiz()" style="width: 100%; justify-content: center; background: #22c55e;">
+        <i class="fas fa-check-double"></i> Selesaikan Ujian
+    </button>
 </section>
 
 <section id="certificate" class="page">
-    <h2>Sertifikat</h2>
+    <h2>Penghargaan</h2>
     <div id="certContainer"></div>
 </section>
 
@@ -139,44 +284,27 @@ const QUIZ_DB = "quiz_data";
 let editIndex = null;
 let user = null;
 
-// ELEMENT
 const navMenu = document.getElementById("navMenu");
-const menuCourse = document.getElementById("menuCourse");
-const menuQuizAdmin = document.getElementById("menuQuizAdmin");
-const menuQuizUser = document.getElementById("menuQuizUser");
-const menuCert = document.getElementById("menuCert");
 const loginSection = document.getElementById("login");
 
-// LOGIN
 function login() {
     const name = document.getElementById("username").value;
     const role = document.getElementById("role").value;
-
-    if (!name) return alert("Isi nama!");
-
+    if (!name) return alert("Tolong isi nama kamu, ya!");
     user = { name, role };
     localStorage.setItem("user", JSON.stringify(user));
-
     loginPage();
 }
 
 function loginPage() {
     loginSection.classList.remove("active");
     navMenu.style.display = "flex";
-
-    // Reset display menu
-    menuCourse.style.display = "block";
-    menuQuizAdmin.style.display = "block";
-    menuQuizUser.style.display = "block";
-    menuCert.style.display = "block";
-
-    if (user.role === "student") {
-        menuCourse.style.display = "none";
-        menuQuizAdmin.style.display = "none";
-    } else {
-        menuQuizUser.style.display = "none";
-        menuCert.style.display = "none";
-    }
+    
+    // Filter Navigasi berdasarkan Role
+    document.getElementById("nav-courses").style.display = user.role === "admin" ? "flex" : "none";
+    document.getElementById("nav-quizAdmin").style.display = user.role === "admin" ? "flex" : "none";
+    document.getElementById("nav-quiz").style.display = user.role === "student" ? "flex" : "none";
+    document.getElementById("nav-certificate").style.display = user.role === "student" ? "flex" : "none";
 
     go("dashboard");
 }
@@ -186,152 +314,88 @@ function logout() {
     location.reload();
 }
 
-// NAV
 function go(page) {
     document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.querySelectorAll("nav a").forEach(a => a.classList.remove("active"));
+    
     document.getElementById(page).classList.add("active");
+    if(document.getElementById("nav-"+page)) {
+        document.getElementById("nav-"+page).classList.add("active");
+    }
 
     if (page === "dashboard") loadDashboard();
     if (page === "learning") render();
     if (page === "certificate") loadCertificate();
     if (page === "quiz") renderQuiz();
+    
+    window.scrollTo(0,0);
 }
 
-// DASHBOARD
 function loadDashboard() {
-    document.getElementById("welcomeText").innerText =
-        "Halo, " + user.name + " (" + user.role + ")";
-
+    document.getElementById("welcomeText").innerText = "Halo, " + user.name + "!";
     const data = JSON.parse(localStorage.getItem(DB) || "[]");
     document.getElementById("totalCourse").innerText = data.length;
 }
 
-// ===== MATERI =====
+// MATERI LOGIC
 function addCourse() {
-    if (user.role !== "admin") return alert("Hanya dosen!");
-
     const title = document.getElementById("title").value;
     const desc = document.getElementById("desc").value;
     const category = document.getElementById("category").value;
     const fileInput = document.getElementById("file");
-
-    if (!title || !desc || !category) return alert("Isi semua!");
+    if (!title || !desc || !category) return alert("Lengkapi data materi dulu!");
 
     const reader = new FileReader();
-
     reader.onload = function () {
         const data = JSON.parse(localStorage.getItem(DB) || "[]");
-
-        data.push({
-            title,
-            desc,
-            category,
-            file: reader.result || null,
-            done: false,
-            author: user.name
-        });
-
+        data.push({ title, desc, category, file: reader.result || null, done: false, author: user.name });
         localStorage.setItem(DB, JSON.stringify(data));
-        alert("Materi ditambahkan!");
+        alert("Materi berhasil diterbitkan!");
         clearForm();
         go("learning");
     };
-
-    if (fileInput.files[0]) {
-        reader.readAsDataURL(fileInput.files[0]);
-    } else {
-        reader.onload();
-    }
-}
-
-function editCourse(i){
-    const data = JSON.parse(localStorage.getItem(DB));
-    
-    if (data[i].author !== user.name) return alert("Ini bukan materi Anda!");
-
-    document.getElementById("title").value = data[i].title;
-    document.getElementById("desc").value = data[i].desc;
-    document.getElementById("category").value = data[i].category;
-
-    editIndex = i;
-    go("courses");
-}
-
-function updateCourse(){
-    if(editIndex === null) return alert("Pilih materi dulu!");
-
-    const data = JSON.parse(localStorage.getItem(DB));
-    
-    if (data[editIndex].author !== user.name) return alert("Ini bukan materi Anda!");
-
-    data[editIndex].title = document.getElementById("title").value;
-    data[editIndex].desc = document.getElementById("desc").value;
-    data[editIndex].category = document.getElementById("category").value;
-
-    localStorage.setItem(DB, JSON.stringify(data));
-
-    alert("Materi diupdate!");
-    editIndex = null;
-    clearForm();
-    render();
-    go("learning");
+    if (fileInput.files[0]) reader.readAsDataURL(fileInput.files[0]);
+    else reader.onload();
 }
 
 function render() {
     const list = document.getElementById("list");
     let data = JSON.parse(localStorage.getItem(DB) || "[]");
+    const originalData = [...data];
 
-    // FILTER LOGIC: Kalau yang login Dosen (admin), saring materi miliknya sendiri saja
     if (user.role === "admin") {
         data = data.filter(c => c.author === user.name);
     }
 
     if (!data.length) {
-        list.innerHTML = "<p>Belum ada materi</p>";
+        list.innerHTML = "<div class='card' style='text-align:center;'>Belum ada materi yang tersedia.</div>";
         return;
     }
 
-    // Untuk melacak index asli di localStorage saat tombol Edit/Hapus diklik, 
-    // kita cari berdasarkan kecocokan judul & author agar tidak salah target setelah di-filter.
-    const originalData = JSON.parse(localStorage.getItem(DB) || "[]");
-
     list.innerHTML = data.map((c)=> {
-        // Cari index asli di database localStorage
         const originalIndex = originalData.findIndex(orig => orig.title === c.title && orig.author === c.author);
-
         return `
             <div class="card">
-                <b>${c.title}</b> 
-                <span class="author-badge">Oleh: ${c.author || 'Sistem'}</span>
-                <p><i>${c.category}</i></p>
-                <p>${c.desc}</p>
-
-                ${
-                    c.file 
-                    ? c.file.startsWith("data:image")
-                        ? `<img src="${c.file}" width="100%">`
-                        : `<a href="${c.file}" download>📥 Download File</a>`
-                    : ""
-                }
-
-                <p>${c.done ? "✅ Selesai" : "❌ Belum"}</p>
-
-                <button onclick="toggle(${originalIndex})">Selesai</button>
-
-                ${
-                    user.role === "admin" && c.author === user.name
-                    ? `
-                        <button onclick="editCourse(${originalIndex})" style="background:orange">Edit</button>
-                        <button onclick="del(${originalIndex})" style="background:red">Hapus</button>
-                      `
-                    : ""
-                }
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <b style="font-size:18px;">${c.title}</b>
+                    <span class="author-badge"><i class="fas fa-user"></i> ${c.author || 'Sistem'}</span>
+                </div>
+                <p style="color: var(--primary); font-size:12px; font-weight:600; margin: 5px 0;"># ${c.category}</p>
+                <p style="color: var(--text-light); line-height:1.6;">${c.desc}</p>
+                ${c.file ? (c.file.startsWith("data:image") ? `<img src="${c.file}" style="width:100%; border-radius:12px; margin: 10px 0;">` : `<a href="${c.file}" download style="display:block; margin:10px 0; color:var(--primary);">📥 Download Lampiran</a>`) : ""}
+                <div style="display:flex; gap:10px; margin-top:15px; border-top:1px solid #eee; padding-top:15px;">
+                    <button onclick="toggle(${originalIndex})" style="background:#f1f5f9; color:var(--text-dark);">${c.done ? '✅ Selesai' : '📖 Tandai Selesai'}</button>
+                    ${user.role === "admin" && c.author === user.name ? `
+                        <button onclick="editCourse(${originalIndex})" style="background:#fbbf24;"><i class="fas fa-edit"></i></button>
+                        <button onclick="del(${originalIndex})" style="background:#ef4444;"><i class="fas fa-trash"></i></button>
+                    ` : ""}
+                </div>
             </div>
         `;
     }).join("");
 }
 
-function clearForm(){
+function clearForm() {
     document.getElementById("title").value = "";
     document.getElementById("desc").value = "";
     document.getElementById("category").value = "";
@@ -345,69 +409,61 @@ function toggle(i){
     render();
 }
 
-// Modifikasi fungsi hapus agar sinkron dengan index ter-filter
-function del(i){
+function editCourse(i){
     const data = JSON.parse(localStorage.getItem(DB));
-    
-    if (data[i].author !== user.name) return alert("Ini bukan materi Anda!");
+    document.getElementById("title").value = data[i].title;
+    document.getElementById("desc").value = data[i].desc;
+    document.getElementById("category").value = data[i].category;
+    editIndex = i;
+    go("courses");
+}
 
-    if(confirm("Yakin ingin menghapus materi ini?")) {
+function updateCourse(){
+    if(editIndex === null) return alert("Pilih materi yang mau diubah!");
+    const data = JSON.parse(localStorage.getItem(DB));
+    data[editIndex].title = document.getElementById("title").value;
+    data[editIndex].desc = document.getElementById("desc").value;
+    data[editIndex].category = document.getElementById("category").value;
+    localStorage.setItem(DB, JSON.stringify(data));
+    alert("Berhasil diperbarui!");
+    editIndex = null;
+    clearForm();
+    render();
+    go("learning");
+}
+
+function del(i){
+    if(confirm("Yakin mau hapus materi ini?")) {
+        const data = JSON.parse(localStorage.getItem(DB));
         data.splice(i,1);
         localStorage.setItem(DB, JSON.stringify(data));
         render();
     }
 }
 
-// ===== QUIZ DOSEN =====
+// QUIZ LOGIC
 function addQuestion(){
     const q = document.getElementById("qText").value;
-    const a1 = document.getElementById("opt1").value;
-    const a2 = document.getElementById("opt2").value;
-    const a3 = document.getElementById("opt3").value;
-    const a4 = document.getElementById("opt4").value;
+    const a = [document.getElementById("opt1").value, document.getElementById("opt2").value, document.getElementById("opt3").value, document.getElementById("opt4").value];
     const c = document.getElementById("correct").value;
-
-    if(!q||!a1||!a2||!a3||!a4||c==="") return alert("Isi semua!");
-    if(Number(c) < 0 || Number(c) > 3) return alert("Jawaban benar 0-3!");
-
+    if(!q || a.includes("") || c === "") return alert("Isi soal kuis dengan lengkap!");
     const data = JSON.parse(localStorage.getItem(QUIZ_DB)||"[]");
-
-    data.push({
-        q,
-        a:[a1,a2,a3,a4],
-        correct:Number(c)
-    });
-
+    data.push({ q, a, correct:Number(c) });
     localStorage.setItem(QUIZ_DB,JSON.stringify(data));
-    alert("Soal ditambahkan!");
-    
+    alert("Soal berhasil ditambah!");
     document.getElementById("qText").value = "";
-    document.getElementById("opt1").value = "";
-    document.getElementById("opt2").value = "";
-    document.getElementById("opt3").value = "";
-    document.getElementById("opt4").value = "";
-    document.getElementById("correct").value = "";
+    document.getElementById("opt1").value = ""; document.getElementById("opt2").value = ""; document.getElementById("opt3").value = ""; document.getElementById("opt4").value = "";
 }
 
-// ===== QUIZ MAHASISWA =====
-let score = 0;
-let answered = {};
-
+let score = 0; let answered = {};
 function renderQuiz(){
     const container = document.getElementById("quizContainer");
     const questions = JSON.parse(localStorage.getItem(QUIZ_DB) || "[]");
-
-    score = 0;
-    answered = {};
-
-    if (!questions.length){
-        container.innerHTML = "<p>Belum ada quiz</p>";
-        return;
-    }
-
+    score = 0; answered = {};
+    if (!questions.length) return container.innerHTML = "<div class='card'>Dosen belum membuat kuis.</div>";
     container.innerHTML = questions.map((q,i)=>`
         <div class="card">
-            <p>${i+1}. ${q.q}</p>
+            <p><b>Soal ${i+1}:</b> ${q.q}</p>
             ${q.a.map((opt,j)=>`
                 <button id="q${i}_${j}" onclick="answerQuiz(${i},${j})">${opt}</button>
             `).join("")}
@@ -417,81 +473,55 @@ function renderQuiz(){
 
 function answerQuiz(i,j){
     const questions = JSON.parse(localStorage.getItem(QUIZ_DB) || "[]");
-
     if (answered[i]) return;
     answered[i] = true;
-
+    const btn = document.getElementById(`q${i}_${j}`);
     if (j === questions[i].correct){
         score++;
-        document.getElementById(`q${i}_${j}`).style.background = "green";
+        btn.style.background = "#22c55e"; btn.style.color = "white";
     } else {
-        document.getElementById(`q${i}_${j}`).style.background = "red";
-        document.getElementById(`q${i}_${questions[i].correct}`).style.background = "green";
+        btn.style.background = "#ef4444"; btn.style.color = "white";
+        document.getElementById(`q${i}_${questions[i].correct}`).style.background = "#22c55e";
+        document.getElementById(`q${i}_${questions[i].correct}`).style.color = "white";
     }
 }
 
 function finishQuiz(){
     const questions = JSON.parse(localStorage.getItem(QUIZ_DB) || "[]");
-
-    if (!questions.length) return alert("Belum ada soal!");
-    
-    if (Object.keys(answered).length < questions.length) {
-        if(!confirm("Ada soal yang belum dijawab. Tetap kumpulkan?")) return;
-    }
-
+    if (!questions.length) return;
     const result = (score / questions.length) * 100;
     localStorage.setItem("quiz_score", result.toFixed(1));
-
-    alert("Nilai: " + result.toFixed(1));
-    alert(result >= 70 ? "LULUS 🎉" : "TIDAK LULUS ❌");
-
+    alert("Skor kamu: " + result.toFixed(1));
     go("dashboard");
 }
 
-// ===== SERTIFIKAT =====
 function loadCertificate(){
     const nilai = localStorage.getItem("quiz_score");
     const container = document.getElementById("certContainer");
-
-    if (!nilai){
-        container.innerHTML = "<p>Belum mengerjakan quiz</p>";
-        return;
-    }
-
-    if (parseFloat(nilai) < 70){
-        container.innerHTML = "<p>Maaf, Anda tidak lulus kuis. Nilai minimal kelulusan adalah 70.</p>";
-        return;
-    }
-
+    if (!nilai || parseFloat(nilai) < 70) return container.innerHTML = "<div class='card'>Selesaikan kuis dengan nilai minimal 70 untuk dapat sertifikat.</div>";
     container.innerHTML = `
-        <div style="border:3px dashed #4a90e2;padding:30px;text-align:center;background:#fff;border-radius:10px;">
-            <h1 style="color:#4a90e2;margin-bottom:5px;">SERTIFIKAT KELULUSAN</h1>
-            <p style="font-style:italic;margin-top:0;">Diberikan Kepada:</p>
-            <h2 style="border-bottom:2px solid #333;display:inline-block;padding:0 30px;text-transform:uppercase;">${user.name}</h2>
-            <p>Telah menyelesaikan seluruh rangkaian materi kuliah dan dinyatakan:</p>
-            <h3 style="color:green;font-size:24px;margin:10px 0;">🏆 LULUS DENGAN NILAI: ${nilai} 🎓</h3>
-            <p style="font-size:12px;color:#777;margin-top:30px;">Diverifikasi secara otomatis oleh Sistem PWA LMS Kampus</p>
+        <div class="card" style="border: 8px double var(--primary); text-align:center; padding: 50px;">
+            <h1 style="color:var(--primary); font-size:40px; margin:0;">SERTIFIKAT</h1>
+            <p style="margin:20px 0;">Diberikan dengan hormat kepada:</p>
+            <h2 style="text-decoration:underline; font-size:32px;">${user.name}</h2>
+            <p>Telah dinyatakan Lulus pada kuis kompetensi dengan skor:</p>
+            <h1 style="color:#22c55e;">${nilai}</h1>
+            <p style="font-size:12px; margin-top:40px; color:var(--text-light);">E-Certificate Generated by LMS PWA</p>
         </div>
     `;
 }
 
-// AUTO LOGIN & LOAD INITIAL DATA FROM JSON
+// INITIAL LOAD
 window.onload = async () => {
     if (!localStorage.getItem(DB)) {
         try {
             const response = await fetch('./data.json');
             const defaultData = await response.json();
             localStorage.setItem(DB, JSON.stringify(defaultData));
-        } catch (error) {
-            console.error("Gagal memuat data.json bawaan:", error);
-        }
+        } catch (e) {}
     }
-
     const saved = localStorage.getItem("user");
-    if (saved){
-        user = JSON.parse(saved);
-        loginPage();
-    }
+    if (saved){ user = JSON.parse(saved); loginPage(); }
 };
 </script>
 
