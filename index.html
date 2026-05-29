@@ -228,7 +228,7 @@ function addCourse() {
             category,
             file: reader.result || null,
             done: false,
-            author: user.name // <--- Menyimpan nama dosen pembuat materi
+            author: user.name
         });
 
         localStorage.setItem(DB, JSON.stringify(data));
@@ -247,7 +247,6 @@ function addCourse() {
 function editCourse(i){
     const data = JSON.parse(localStorage.getItem(DB));
     
-    // Proteksi tambahan: mastiin dosen yang maksa edit lewat console tetep ketolak kalau bukan punyanya
     if (data[i].author !== user.name) return alert("Ini bukan materi Anda!");
 
     document.getElementById("title").value = data[i].title;
@@ -263,7 +262,6 @@ function updateCourse(){
 
     const data = JSON.parse(localStorage.getItem(DB));
     
-    // Proteksi saat update
     if (data[editIndex].author !== user.name) return alert("Ini bukan materi Anda!");
 
     data[editIndex].title = document.getElementById("title").value;
@@ -281,43 +279,56 @@ function updateCourse(){
 
 function render() {
     const list = document.getElementById("list");
-    const data = JSON.parse(localStorage.getItem(DB) || "[]");
+    let data = JSON.parse(localStorage.getItem(DB) || "[]");
+
+    // FILTER LOGIC: Kalau yang login Dosen (admin), saring materi miliknya sendiri saja
+    if (user.role === "admin") {
+        data = data.filter(c => c.author === user.name);
+    }
 
     if (!data.length) {
         list.innerHTML = "<p>Belum ada materi</p>";
         return;
     }
 
-    list.innerHTML = data.map((c,i)=>`
-        <div class="card">
-            <b>${c.title}</b> 
-            <span class="author-badge">Oleh: ${c.author || 'Sistem'}</span>
-            <p><i>${c.category}</i></p>
-            <p>${c.desc}</p>
+    // Untuk melacak index asli di localStorage saat tombol Edit/Hapus diklik, 
+    // kita cari berdasarkan kecocokan judul & author agar tidak salah target setelah di-filter.
+    const originalData = JSON.parse(localStorage.getItem(DB) || "[]");
 
-            ${
-                c.file 
-                ? c.file.startsWith("data:image")
-                    ? `<img src="${c.file}" width="100%">`
-                    : `<a href="${c.file}" download>📥 Download File</a>`
-                : ""
-            }
+    list.innerHTML = data.map((c)=> {
+        // Cari index asli di database localStorage
+        const originalIndex = originalData.findIndex(orig => orig.title === c.title && orig.author === c.author);
 
-            <p>${c.done ? "✅ Selesai" : "❌ Belum"}</p>
+        return `
+            <div class="card">
+                <b>${c.title}</b> 
+                <span class="author-badge">Oleh: ${c.author || 'Sistem'}</span>
+                <p><i>${c.category}</i></p>
+                <p>${c.desc}</p>
 
-            <button onclick="toggle(${i})">Selesai</button>
+                ${
+                    c.file 
+                    ? c.file.startsWith("data:image")
+                        ? `<img src="${c.file}" width="100%">`
+                        : `<a href="${c.file}" download>📥 Download File</a>`
+                    : ""
+                }
 
-            ${
-                // VALIDASI: Tombol Edit & Hapus cuma muncul kalau user adalah Dosen pembuat materi itu sendiri
-                user.role === "admin" && c.author === user.name
-                ? `
-                    <button onclick="editCourse(${i})" style="background:orange">Edit</button>
-                    <button onclick="del(${i})" style="background:red">Hapus</button>
-                  `
-                : ""
-            }
-        </div>
-    `).join("");
+                <p>${c.done ? "✅ Selesai" : "❌ Belum"}</p>
+
+                <button onclick="toggle(${originalIndex})">Selesai</button>
+
+                ${
+                    user.role === "admin" && c.author === user.name
+                    ? `
+                        <button onclick="editCourse(${originalIndex})" style="background:orange">Edit</button>
+                        <button onclick="del(${originalIndex})" style="background:red">Hapus</button>
+                      `
+                    : ""
+                }
+            </div>
+        `;
+    }).join("");
 }
 
 function clearForm(){
@@ -334,10 +345,10 @@ function toggle(i){
     render();
 }
 
+// Modifikasi fungsi hapus agar sinkron dengan index ter-filter
 function del(i){
     const data = JSON.parse(localStorage.getItem(DB));
     
-    // Proteksi saat hapus
     if (data[i].author !== user.name) return alert("Ini bukan materi Anda!");
 
     if(confirm("Yakin ingin menghapus materi ini?")) {
