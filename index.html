@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS Kelompok Keliatan</title>
+
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --light: #f4f4f4;
+        }
+        body { font-family: sans-serif; margin: 0; background: var(--light); }
+        header { background: var(--primary); color: white; padding: 1rem; text-align: center; }
+
+        nav { display: none; justify-content: center; background: #fff; flex-wrap: wrap; }
+        nav a { padding: 1rem; cursor: pointer; text-decoration: none; color: #333; }
+        nav a:hover { color: var(--primary); }
+
+        .page { display: none; padding: 20px; max-width: 800px; margin: auto; }
+        .page.active { display: block; }
+
+        .card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 3px;
+        }
+
+        input, textarea, select {
+            width: 95%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header><h1>📚 LMS Kampus</h1></header>
+
+<section id="login" class="page active">
+    <h2>Login</h2>
+    <div class="card">
+        <input type="text" id="username" placeholder="Nama">
+        <select id="role">
+            <option value="student">Mahasiswa</option>
+            <option value="admin">Dosen</option>
+        </select>
+        <button onclick="login()">Masuk</button>
+    </div>
+</section>
+
+<nav id="navMenu">
+    <a onclick="go('dashboard')">Dashboard</a>
+    <a id="menuCourse" onclick="go('courses')">Tambah Materi</a>
+    <a id="menuQuizAdmin" onclick="go('quizAdmin')">Buat Quiz</a>
+    <a onclick="go('learning')">Materi</a>
+    <a id="menuQuizUser" onclick="go('quiz')">Kerjakan Quiz</a>
+    <a id="menuCert" onclick="go('certificate')">Sertifikat</a>
+    <a onclick="logout()">Logout</a>
+</nav>
+
+<section id="dashboard" class="page">
+    <h2>Dashboard</h2>
+    <div class="card">
+        <p id="welcomeText"></p>
+        <p>Total Materi: <span id="totalCourse"></span></p>
+    </div>
+</section>
+
+<section id="courses" class="page">
+    <h2>Tambah Materi</h2>
+    <div class="card">
+        <input type="text" id="title" placeholder="Judul">
+        
+        <select id="category">
+            <option value="">Pilih Kategori</option>
+            <option value="Pemrograman">Pemrograman</option>
+            <option value="Jaringan">Jaringan</option>
+            <option value="Database">Database</option>
+        </select>
+
+        <textarea id="desc" placeholder="Deskripsi"></textarea>
+        <input type="file" id="file">
+
+        <button onclick="addCourse()">Tambah</button>
+        <button onclick="updateCourse()" style="background:orange">Update</button>
+    </div>
+</section>
+
+<section id="quizAdmin" class="page">
+    <h2>Buat Quiz</h2>
+    <div class="card">
+        <input type="text" id="qText" placeholder="Pertanyaan">
+        <input type="text" id="opt1" placeholder="Jawaban A">
+        <input type="text" id="opt2" placeholder="Jawaban B">
+        <input type="text" id="opt3" placeholder="Jawaban C">
+        <input type="text" id="opt4" placeholder="Jawaban D">
+        <input type="number" id="correct" placeholder="Jawaban benar (0-3)">
+        <button onclick="addQuestion()">Tambah Soal</button>
+    </div>
+</section>
+
+<section id="learning" class="page">
+    <h2>Materi</h2>
+    <div id="list"></div>
+</section>
+
+<section id="quiz" class="page">
+    <h2>Quiz</h2>
+    <div id="quizContainer"></div>
+    <br>
+    <button onclick="finishQuiz()">Selesai Quiz</button>
+</section>
+
+<section id="certificate" class="page">
+    <h2>Sertifikat</h2>
+    <div id="certContainer"></div>
+</section>
+
+<script>
+const DB = "lms_data";
+const QUIZ_DB = "quiz_data";
+let editIndex = null;
+let user = null;
+
+// ELEMENT
+const navMenu = document.getElementById("navMenu");
+const menuCourse = document.getElementById("menuCourse");
+const menuQuizAdmin = document.getElementById("menuQuizAdmin");
+const menuQuizUser = document.getElementById("menuQuizUser");
+const menuCert = document.getElementById("menuCert");
+const loginSection = document.getElementById("login");
+
+// LOGIN
+function login() {
+    const name = document.getElementById("username").value;
+    const role = document.getElementById("role").value;
+
+    if (!name) return alert("Isi nama!");
+
+    user = { name, role };
+    localStorage.setItem("user", JSON.stringify(user));
+
+    loginPage();
+}
+
+function loginPage() {
+    loginSection.classList.remove("active");
+    navMenu.style.display = "flex";
+
+    // Reset display semua menu dulu sebelum difilter
+    menuCourse.style.display = "block";
+    menuQuizAdmin.style.display = "block";
+    menuQuizUser.style.display = "block";
+    menuCert.style.display = "block";
+
+    if (user.role === "student") {
+        menuCourse.style.display = "none";
+        menuQuizAdmin.style.display = "none";
+    } else {
+        menuQuizUser.style.display = "none";
+        menuCert.style.display = "none";
+    }
+
+    go("dashboard");
+}
+
+function logout() {
+    localStorage.removeItem("user");
+    location.reload();
+}
+
+// NAV
+function go(page) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(page).classList.add("active");
+
+    if (page === "dashboard") loadDashboard();
+    if (page === "learning") render();
+    if (page === "certificate") loadCertificate();
+    if (page === "quiz") renderQuiz();
+}
+
+// DASHBOARD
+function loadDashboard() {
+    document.getElementById("welcomeText").innerText =
+        "Halo, " + user.name + " (" + user.role + ")";
+
+    const data = JSON.parse(localStorage.getItem(DB) || "[]");
+    document.getElementById("totalCourse").innerText = data.length;
+}
+
+// ===== MATERI =====
+function addCourse() {
+    if (user.role !== "admin") return alert("Hanya dosen!");
+
+    const title = document.getElementById("title").value;
+    const desc = document.getElementById("desc").value;
+    const category = document.getElementById("category").value;
+    const fileInput = document.getElementById("file");
+
+    if (!title || !desc || !category) return alert("Isi semua!");
+
+    const reader = new FileReader();
+
+    reader.onload = function () {
+        const data = JSON.parse(localStorage.getItem(DB) || "[]");
+
+        data.push({
+            title,
+            desc,
+            category,
+            file: reader.result || null,
+            done: false
+        });
+
+        localStorage.setItem(DB, JSON.stringify(data));
+        alert("Materi ditambahkan!");
+        clearForm();
+        go("learning"); // Otomatis arahkan ke list materi setelah tambah data
+    };
+
+    if (fileInput.files[0]) {
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        reader.onload();
+    }
+}
+
+function editCourse(i){
+    const data = JSON.parse(localStorage.getItem(DB));
+
+    document.getElementById("title").value = data[i].title;
+    document.getElementById("desc").value = data[i].desc;
+    document.getElementById("category").value = data[i].category;
+
+    editIndex = i;
+    go("courses"); // Pindah ke tab form input untuk edit
+}
+
+function updateCourse(){
+    if(editIndex === null) return alert("Pilih materi dulu!");
+
+    const data = JSON.parse(localStorage.getItem(DB));
+
+    data[editIndex].title = document.getElementById("title").value;
+    data[editIndex].desc = document.getElementById("desc").value;
+    data[editIndex].category = document.getElementById("category").value;
+
+    localStorage.setItem(DB, JSON.stringify(data));
+
+    alert("Materi diupdate!");
+    editIndex = null;
+    clearForm();
+    render();
+    go("learning");
+}
+
+function render() {
+    const list = document.getElementById("list");
+    const data = JSON.parse(localStorage.getItem(DB) || "[]");
+
+    if (!data.length) {
+        list.innerHTML = "<p>Belum ada materi</p>";
+        return;
+    }
+
+    list.innerHTML = data.map((c,i)=>`
+        <div class="card">
+            <b>${c.title}</b>
+            <p><i>${c.category}</i></p>
+            <p>${c.desc}</p>
+
+            ${
+                c.file 
+                ? c.file.startsWith("data:image")
+                    ? `<img src="${c.file}" width="100%">`
+                    : `<a href="${c.file}" download>📥 Download File</a>`
+                : ""
+            }
+
+            <p>${c.done ? "✅ Selesai" : "❌ Belum"}</p>
+
+            <button onclick="toggle(${i})">Selesai</button>
+
+            ${
+                user.role==="admin"
+                ? `
+                    <button onclick="editCourse(${i})" style="background:orange">Edit</button>
+                    <button onclick="del(${i})" style="background:red">Hapus</button>
+                  `
+                : ""
+            }
+        </div>
+    `).join("");
+}
+
+function clearForm(){
+    document.getElementById("title").value = "";
+    document.getElementById("desc").value = "";
+    document.getElementById("category").value = "";
+    document.getElementById("file").value = "";
+}
+
+function toggle(i){
+    const data = JSON.parse(localStorage.getItem(DB));
+    data[i].done = !data[i].done;
+    localStorage.setItem(DB, JSON.stringify(data));
+    render();
+}
+
+function del(i){
+    if(confirm("Yakin ingin menghapus materi ini?")) {
+        const data = JSON.parse(localStorage.getItem(DB));
+        data.splice(i,1);
+        localStorage.setItem(DB, JSON.stringify(data));
+        render();
+    }
+}
+
+// ===== QUIZ DOSEN =====
+function addQuestion(){
+    const q = document.getElementById("qText").value;
+    const a1 = document.getElementById("opt1").value;
+    const a2 = document.getElementById("opt2").value;
+    const a3 = document.getElementById("opt3").value;
+    const a4 = document.getElementById("opt4").value;
+    const c = document.getElementById("correct").value;
+
+    if(!q||!a1||!a2||!a3||!a4||c==="") return alert("Isi semua!");
+    if(Number(c) < 0 || Number(c) > 3) return alert("Jawaban benar 0-3!");
+
+    const data = JSON.parse(localStorage.getItem(QUIZ_DB)||"[]");
+
+    data.push({
+        q,
+        a:[a1,a2,a3,a4],
+        correct:Number(c)
+    });
+
+    localStorage.setItem(QUIZ_DB,JSON.stringify(data));
+    alert("Soal ditambahkan!");
+    
+    // Clear form kuis setelah ditambah
+    document.getElementById("qText").value = "";
+    document.getElementById("opt1").value = "";
+    document.getElementById("opt2").value = "";
+    document.getElementById("opt3").value = "";
+    document.getElementById("opt4").value = "";
+    document.getElementById("correct").value = "";
+}
+
+// ===== QUIZ MAHASISWA =====
+let score = 0;
+let answered = {};
+
+function renderQuiz(){
+    const container = document.getElementById("quizContainer");
+    const questions = JSON.parse(localStorage.getItem(QUIZ_DB) || "[]");
+
+    // Reset state pengerjaan pas halaman kuis dibuka kembali
+    score = 0;
+    answered = {};
+
+    if (!questions.length){
+        container.innerHTML = "<p>Belum ada quiz</p>";
+        return;
+    }
+
+    container.innerHTML = questions.map((q,i)=>`
+        <div class="card">
+            <p>${i+1}. ${q.q}</p>
+            ${q.a.map((opt,j)=>`
+                <button id="q${i}_${j}" onclick="answerQuiz(${i},${j})">${opt}</button>
+            `).join("")}
+        </div>
+    `).join("");
+}
+
+function answerQuiz(i,j){
+    const questions = JSON.parse(localStorage.getItem(QUIZ_DB) || "[]");
+
+    if (answered[i]) return;
+    answered[i] = true;
+
+    if (j === questions[i].correct){
+        score++;
+        document.getElementById(`q${i}_${j}`).style.background = "green";
+    } else {
+        document.getElementById(`q${i}_${j}`).style.background = "red";
+        document.getElementById(`q${i}_${questions[i].correct}`).style.background = "green";
+    }
+}
+
+function finishQuiz(){
+    const questions = JSON.parse(localStorage.getItem(QUIZ_DB) || "[]");
+
+    if (!questions.length) return alert("Belum ada soal!");
+    
+    // Cek apakah semua kuis sudah dijawab oleh mahasiswa
+    if (Object.keys(answered).length < questions.length) {
+        if(!confirm("Ada soal yang belum dijawab. Tetap kumpulkan?")) return;
+    }
+
+    const result = (score / questions.length) * 100;
+    localStorage.setItem("quiz_score", result.toFixed(1)); // Dibulatkan agar rapi
+
+    alert("Nilai: " + result.toFixed(1));
+    alert(result >= 70 ? "LULUS 🎉" : "TIDAK LULUS ❌");
+
+    // Kembalikan ke dashboard setelah kuis selesai
+    go("dashboard");
+}
+
+// ===== SERTIFIKAT =====
+function loadCertificate(){
+    const nilai = localStorage.getItem("quiz_score");
+    const container = document.getElementById("certContainer");
+
+    if (!nilai){
+        container.innerHTML = "<p>Belum mengerjakan quiz</p>";
+        return;
+    }
+
+    if (parseFloat(nilai) < 70){
+        container.innerHTML = "<p>Maaf, Anda tidak lulus kuis. Nilai minimal kelulusan adalah 70.</p>";
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="border:3px dashed #4a90e2;padding:30px;text-align:center;background:#fff;border-radius:10px;">
+            <h1 style="color:#4a90e2;margin-bottom:5px;">SERTIFIKAT KELULUSAN</h1>
+            <p style="font-style:italic;margin-top:0;">Diberikan Kepada:</p>
+            <h2 style="border-bottom:2px solid #333;display:inline-block;padding:0 30px;text-transform:uppercase;">${user.name}</h2>
+            <p>Telah menyelesaikan seluruh rangkaian materi kuliah dan dinyatakan:</p>
+            <h3 style="color:green;font-size:24px;margin:10px 0;">🏆 LULUS DENGAN NILAI: ${nilai} 🎓</h3>
+            <p style="font-size:12px;color:#777;margin-top:30px;">Diverifikasi secara otomatis oleh Sistem PWA LMS Kampus</p>
+        </div>
+    `;
+}
+
+// AUTO LOGIN
+window.onload = () => {
+    const saved = localStorage.getItem("user");
+    if (saved){
+        user = JSON.parse(saved);
+        loginPage();
+    }
+};
+</script>
+
+</body>
+</html>
