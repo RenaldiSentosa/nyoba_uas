@@ -157,7 +157,7 @@ function loginPage() {
     loginSection.classList.remove("active");
     navMenu.style.display = "flex";
 
-    // Reset display semua menu dulu sebelum difilter
+    // Reset display menu
     menuCourse.style.display = "block";
     menuQuizAdmin.style.display = "block";
     menuQuizUser.style.display = "block";
@@ -226,7 +226,7 @@ function addCourse() {
         localStorage.setItem(DB, JSON.stringify(data));
         alert("Materi ditambahkan!");
         clearForm();
-        go("learning"); // Otomatis arahkan ke list materi setelah tambah data
+        go("learning");
     };
 
     if (fileInput.files[0]) {
@@ -244,7 +244,7 @@ function editCourse(i){
     document.getElementById("category").value = data[i].category;
 
     editIndex = i;
-    go("courses"); // Pindah ke tab form input untuk edit
+    go("courses");
 }
 
 function updateCourse(){
@@ -350,7 +350,6 @@ function addQuestion(){
     localStorage.setItem(QUIZ_DB,JSON.stringify(data));
     alert("Soal ditambahkan!");
     
-    // Clear form kuis setelah ditambah
     document.getElementById("qText").value = "";
     document.getElementById("opt1").value = "";
     document.getElementById("opt2").value = "";
@@ -367,7 +366,6 @@ function renderQuiz(){
     const container = document.getElementById("quizContainer");
     const questions = JSON.parse(localStorage.getItem(QUIZ_DB) || "[]");
 
-    // Reset state pengerjaan pas halaman kuis dibuka kembali
     score = 0;
     answered = {};
 
@@ -406,18 +404,16 @@ function finishQuiz(){
 
     if (!questions.length) return alert("Belum ada soal!");
     
-    // Cek apakah semua kuis sudah dijawab oleh mahasiswa
     if (Object.keys(answered).length < questions.length) {
         if(!confirm("Ada soal yang belum dijawab. Tetap kumpulkan?")) return;
     }
 
     const result = (score / questions.length) * 100;
-    localStorage.setItem("quiz_score", result.toFixed(1)); // Dibulatkan agar rapi
+    localStorage.setItem("quiz_score", result.toFixed(1));
 
     alert("Nilai: " + result.toFixed(1));
     alert(result >= 70 ? "LULUS 🎉" : "TIDAK LULUS ❌");
 
-    // Kembalikan ke dashboard setelah kuis selesai
     go("dashboard");
 }
 
@@ -448,8 +444,20 @@ function loadCertificate(){
     `;
 }
 
-// AUTO LOGIN
-window.onload = () => {
+// AUTO LOGIN & LOAD INITIAL DATA FROM JSON
+window.onload = async () => {
+    // Jalankan sinkronisasi data.json ke localStorage jika local storage masih kosong
+    if (!localStorage.getItem(DB)) {
+        try {
+            const response = await fetch('./data.json');
+            const defaultData = await response.json();
+            localStorage.setItem(DB, JSON.stringify(defaultData));
+        } catch (error) {
+            console.error("Gagal memuat data.json bawaan:", error);
+        }
+    }
+
+    // Cek Sesi login user bawaan
     const saved = localStorage.getItem("user");
     if (saved){
         user = JSON.parse(saved);
