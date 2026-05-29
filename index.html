@@ -39,6 +39,13 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+        .author-badge {
+            font-size: 12px;
+            color: #666;
+            background: #eee;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
     </style>
 </head>
 
@@ -220,7 +227,8 @@ function addCourse() {
             desc,
             category,
             file: reader.result || null,
-            done: false
+            done: false,
+            author: user.name // <--- Menyimpan nama dosen pembuat materi
         });
 
         localStorage.setItem(DB, JSON.stringify(data));
@@ -238,6 +246,9 @@ function addCourse() {
 
 function editCourse(i){
     const data = JSON.parse(localStorage.getItem(DB));
+    
+    // Proteksi tambahan: mastiin dosen yang maksa edit lewat console tetep ketolak kalau bukan punyanya
+    if (data[i].author !== user.name) return alert("Ini bukan materi Anda!");
 
     document.getElementById("title").value = data[i].title;
     document.getElementById("desc").value = data[i].desc;
@@ -251,6 +262,9 @@ function updateCourse(){
     if(editIndex === null) return alert("Pilih materi dulu!");
 
     const data = JSON.parse(localStorage.getItem(DB));
+    
+    // Proteksi saat update
+    if (data[editIndex].author !== user.name) return alert("Ini bukan materi Anda!");
 
     data[editIndex].title = document.getElementById("title").value;
     data[editIndex].desc = document.getElementById("desc").value;
@@ -276,7 +290,8 @@ function render() {
 
     list.innerHTML = data.map((c,i)=>`
         <div class="card">
-            <b>${c.title}</b>
+            <b>${c.title}</b> 
+            <span class="author-badge">Oleh: ${c.author || 'Sistem'}</span>
             <p><i>${c.category}</i></p>
             <p>${c.desc}</p>
 
@@ -293,7 +308,8 @@ function render() {
             <button onclick="toggle(${i})">Selesai</button>
 
             ${
-                user.role==="admin"
+                // VALIDASI: Tombol Edit & Hapus cuma muncul kalau user adalah Dosen pembuat materi itu sendiri
+                user.role === "admin" && c.author === user.name
                 ? `
                     <button onclick="editCourse(${i})" style="background:orange">Edit</button>
                     <button onclick="del(${i})" style="background:red">Hapus</button>
@@ -319,8 +335,12 @@ function toggle(i){
 }
 
 function del(i){
+    const data = JSON.parse(localStorage.getItem(DB));
+    
+    // Proteksi saat hapus
+    if (data[i].author !== user.name) return alert("Ini bukan materi Anda!");
+
     if(confirm("Yakin ingin menghapus materi ini?")) {
-        const data = JSON.parse(localStorage.getItem(DB));
         data.splice(i,1);
         localStorage.setItem(DB, JSON.stringify(data));
         render();
@@ -446,7 +466,6 @@ function loadCertificate(){
 
 // AUTO LOGIN & LOAD INITIAL DATA FROM JSON
 window.onload = async () => {
-    // Jalankan sinkronisasi data.json ke localStorage jika local storage masih kosong
     if (!localStorage.getItem(DB)) {
         try {
             const response = await fetch('./data.json');
@@ -457,7 +476,6 @@ window.onload = async () => {
         }
     }
 
-    // Cek Sesi login user bawaan
     const saved = localStorage.getItem("user");
     if (saved){
         user = JSON.parse(saved);
