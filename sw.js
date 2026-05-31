@@ -2,10 +2,11 @@ const CACHE = "lms-v1";
 
 // Masukkan semua aset statis utama yang wajib ada biar PWA jalan lancar pas offline
 const ASSETS = [
-    "./",                 // Ini penting biar saat akses domain utama langsung ke-cache
-    "index.html",
-    "manifest.json",
-    "favicon-192.png",
+    "/",                  // Mengcache root domain/localhost
+    "index.html",         // Mengcache file utama
+    "manifest.json",      // Mengcache konfigurasi PWA
+    "data.json",          // PENTING: Mengcache data materi awal agar tidak eror pas offline!
+    "favicon-192.png",    // Mengcache icon aplikasi
     "favicon-512.png"
 ];
 
@@ -13,7 +14,7 @@ const ASSETS = [
 self.addEventListener("install", e => {
     e.waitUntil(
         caches.open(CACHE).then(cache => {
-            console.log("Mendaftarkan core aset ke dalam cache...");
+            console.log("PWA: Mendaftarkan core aset ke dalam cache...");
             return cache.addAll(ASSETS);
         })
     );
@@ -26,7 +27,7 @@ self.addEventListener("activate", e => {
             return Promise.all(
                 keys.map(key => {
                     if (key !== CACHE) {
-                        console.log("Menghapus cache lama:", key);
+                        console.log("PWA: Menghapus cache lama:", key);
                         return caches.delete(key);
                     }
                 })
