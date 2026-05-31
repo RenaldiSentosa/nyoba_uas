@@ -7,6 +7,8 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="manifest" href="manifest.json">
 
     <style>
         :root {
@@ -121,7 +123,7 @@
             outline: none;
         }
 
-        input:focus { border-color: var(--primary); ring: 2px solid var(--primary); }
+        input:focus { border-color: var(--primary); }
 
         button {
             background: var(--primary);
@@ -511,15 +513,30 @@ function loadCertificate(){
     `;
 }
 
-// INITIAL LOAD
+// INITIAL LOAD (Sudah Ditambah Registrasi Service Worker PWA)
 window.onload = async () => {
+    // 1. Registrasi Service Worker PWA agar bisa diakses Offline
+    if ('serviceWorker' in navigator) {
+        try {
+            const reg = await navigator.serviceWorker.register('sw.js');
+            console.log('PWA: Service Worker berhasil terdaftar di scope:', reg.scope);
+        } catch (error) {
+            console.error('PWA: Gagal mendaftarkan Service Worker:', error);
+        }
+    }
+
+    // 2. Load Data Awal dari data.json ke LocalStorage jika kosong
     if (!localStorage.getItem(DB)) {
         try {
             const response = await fetch('./data.json');
             const defaultData = await response.json();
             localStorage.setItem(DB, JSON.stringify(defaultData));
-        } catch (e) {}
+        } catch (e) {
+            console.error('Gagal memuat default data.json:', e);
+        }
     }
+
+    // 3. Cek Status Login User
     const saved = localStorage.getItem("user");
     if (saved){ user = JSON.parse(saved); loginPage(); }
 };
